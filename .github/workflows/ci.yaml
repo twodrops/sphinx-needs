@@ -126,8 +126,12 @@ jobs:
   #     - name: Run 'ubc build index docs'
   #       run: ubc build index docs --show-warnings
 
+  # Display names carry the PACKAGE they exercise as their first word (`Needs …`,
+  # `Mounts …`), so the checks list on a pull request reads by package. `Lint` and
+  # `check` are workspace-wide and are also required status contexts on master, so
+  # their names must not change without updating the branch protection.
   tests-core:
-    name: "Core py${{ matrix.python-version }} ${{ matrix.sphinx-group }} ${{ matrix.os }}"
+    name: "Needs py${{ matrix.python-version }} ${{ matrix.sphinx-group }} ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false # Set on "false" to get the results of ALL builds
@@ -194,7 +198,7 @@ jobs:
           fail_ci_if_error: true
 
   tests-js:
-    name: "JS py${{ matrix.python-version }} ${{ matrix.sphinx-group }} ${{ matrix.os }}"
+    name: "Needs JS py${{ matrix.python-version }} ${{ matrix.sphinx-group }} ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -230,7 +234,7 @@ jobs:
         run: uv run --no-sync pytest -v packages/sphinx-needs/tests --ignore=packages/sphinx-needs/tests/benchmarks -m "jstest"
 
   tests-no-mpl:
-    name: Test matplotlib uninstalled
+    name: Needs without matplotlib
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -325,7 +329,7 @@ jobs:
           fail_ci_if_error: true
 
   bazel:
-    name: Bazel integration test
+    name: Mounts Bazel integration
     runs-on: ubuntu-latest
     # Its own lane, not a matrix cell: it needs a Bazel installation and two caches no
     # other job wants, and three of its four steps are `bazel build`/`bazel run` targets
@@ -364,7 +368,7 @@ jobs:
         run: bazel run //:build_docs
 
   smoke-needs:
-    name: Smoke test the built package
+    name: Needs smoke test of the built wheel
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
